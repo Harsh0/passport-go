@@ -14,6 +14,7 @@ func TwitterStrategy(params map[string]string) Strategy {
 		// "allow_signup":  "true",
 		// "state":         params["state"],
 		},
+		GetA
 		_Authenticate: func(code, state string) (Profile, error) {
 			// data := map[string]string{
 			// 	"client_id":     params["clientID"],

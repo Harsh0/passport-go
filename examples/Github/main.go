@@ -14,7 +14,7 @@ var GithubStrategy passport.Strategy
 
 func init() {
 	gotenv.Load()
-	GithubStrategy = passport.GithubStrategy(map[string]string{
+	GithubStrategy = passport.GithubStrategy(passport.Provider{
 		"clientID":     os.Getenv("GITHUB_CLIENT_ID"),
 		"clientSecret": os.Getenv("GITHUB_CLIENT_SECRET"),
 		"callbackURL":  os.Getenv("HOST") + "/github/callback",

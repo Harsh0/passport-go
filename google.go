@@ -2,28 +2,39 @@ package passport
 
 import (
 	"encoding/json"
+	"strings"
 )
 
-func GoogleStrategy(params map[string]string) Strategy {
+func GoogleStrategy(provider Provider) Strategy {
 	return Strategy{
-		ClientID:     params["clientID"],
-		ClientSecret: params["clientSecret"],
-		RedirectURI:  params["callbackURL"],
-		AuthRootURL:  "https://accounts.google.com/o/oauth2/auth",
-		AuthURLParam: map[string]string{
-			"client_id":     params["clientID"],
-			"response_type": "code",
-			"scope":         "email",
-			"redirect_uri":  params["callbackURL"],
-			"allow_signup":  "true",
-			"state":         "",
+		_GetAuthURL: func(states ...string) (string, error) {
+			AuthURLParam = map[string]string{
+				"client_id":     provider.ClientID,
+				"response_type": "code",
+				"scope":         "email",
+				"redirect_uri":  provider.RedirectURI,
+				"allow_signup":  "true",
+				"state":         "",
+			}
+			paramArray := []string{}
+			var state string
+			if len(states) == 0 || states[0] == "" {
+				state = GenerateRandomString(10)
+			} else {
+				state = states[0]
+			}
+			s.AuthURLParam["state"] = state
+			for k, v := range AuthURLParam {
+				paramArray = append(paramArray, k+"="+v)
+			}
+			return "https://accounts.google.com/o/oauth2/auth" + "?" + strings.Join(paramArray, "&"), nil
 		},
 		_Authenticate: func(code, state string) (Profile, error) {
 			data := map[string]string{
-				"client_id":     params["clientID"],
-				"client_secret": params["clientSecret"],
+				"client_id":     provider.ClientID,
+				"client_secret": provider.ClientSecret,
 				"code":          code,
-				"redirect_uri":  params["callbackURL"],
+				"redirect_uri":  provider.RedirectURI,
 				"grant_type":    "authorization_code",
 			}
 			bs, err := postBody("application/x-www-form-urlencoded", data, "https://accounts.google.com/o/oauth2/token")

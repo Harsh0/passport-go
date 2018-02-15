@@ -5,25 +5,35 @@ import (
 	"strings"
 )
 
-func GithubStrategy(params map[string]string) Strategy {
+func GithubStrategy(provider Provider) Strategy {
 	return Strategy{
-		ClientID:     params["clientID"],
-		ClientSecret: params["clientSecret"],
-		RedirectURI:  params["callbackURL"],
-		AuthRootURL:  "https://github.com/login/oauth/authorize",
-		AuthURLParam: map[string]string{
-			"client_id":    params["clientID"],
-			"redirect_uri": params["callbackURL"],
-			"allow_signup": "true",
-			"state":        "",
-			"scope":        "email",
+		_GetAuthURL: func(states ...string) (string, error) {
+			AuthURLParam := map[string]string{
+				"client_id":    provider.ClientID,
+				"redirect_uri": provider.RedirectURI,
+				"allow_signup": "true",
+				"state":        "",
+				"scope":        "email",
+			}
+			paramArray := []string{}
+			var state string
+			if len(states) == 0 || states[0] == "" {
+				state = GenerateRandomString(10)
+			} else {
+				state = states[0]
+			}
+			s.AuthURLParam["state"] = state
+			for k, v := range AuthURLParam {
+				paramArray = append(paramArray, k+"="+v)
+			}
+			return "https://github.com/login/oauth/authorize" + "?" + strings.Join(paramArray, "&"), nil
 		},
 		_Authenticate: func(code, state string) (Profile, error) {
 			data := map[string]string{
-				"client_id":     params["clientID"],
-				"client_secret": params["clientSecret"],
+				"client_id":     provider.ClientID,
+				"client_secret": provider.ClientSecret,
 				"code":          code,
-				"redirect_uri":  params["callbackURL"],
+				"redirect_uri":  provider.RedirectURI,
 				"state":         state,
 				"grant_type":    "authorization_code",
 			}
