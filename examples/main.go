@@ -30,7 +30,7 @@ func init() {
 /* main will be run during the build process.*/
 func main() {
 	//for release mode
-	gin.SetMode(gin.ReleaseMode)
+	// gin.SetMode(gin.ReleaseMode)
 	//Initialize router
 	r := gin.Default()
 	//Use CORS Middleware
@@ -62,7 +62,15 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"url": url})
 	})
 	r.GET("/google/callback", func(c *gin.Context) {
-
+		code := c.Query("code")
+		state := c.Query("state")
+		profile, err := GoogleStrategy.Authenticate(code, state)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Some Error Occured, Please try again"})
+			return
+		}
+		fmt.Println(profile)
+		c.JSON(http.StatusOK, gin.H{"message": "successfully logged in"})
 	})
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Not Found"})

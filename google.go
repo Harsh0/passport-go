@@ -2,7 +2,6 @@ package passport
 
 import (
 	"encoding/json"
-	"strings"
 )
 
 func GoogleStrategy(params map[string]string) Strategy {
@@ -25,16 +24,18 @@ func GoogleStrategy(params map[string]string) Strategy {
 				"client_secret": params["clientSecret"],
 				"code":          code,
 				"redirect_uri":  params["callbackURL"],
-				"state":         state,
 				"grant_type":    "authorization_code",
 			}
-
 			bs, err := postBody("application/x-www-form-urlencoded", data, "https://accounts.google.com/o/oauth2/token")
 			if err != nil {
 				return nil, err
 			}
-			str := string(bs)
-			accessToken := strings.Split(strings.Split(str, "&")[0], "=")[1]
+			var authData map[string]interface{}
+			err = json.Unmarshal(bs, &authData)
+			if err != nil {
+				return nil, err
+			}
+			accessToken := authData["access_token"].(string)
 			bs, err = getHttp("https://www.googleapis.com/plus/v1/people/me" + "?access_token=" + accessToken)
 			var userData map[string]interface{}
 			err = json.Unmarshal(bs, &userData)
