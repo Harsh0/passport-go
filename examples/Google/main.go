@@ -14,10 +14,10 @@ var GoogleStrategy passport.Strategy
 
 func init() {
 	gotenv.Load()
-	GoogleStrategy = passport.GoogleStrategy(map[string]string{
-		"clientID":     os.Getenv("GOOGLE_CLIENT_ID"),
-		"clientSecret": os.Getenv("GOOGLE_CLIENT_SECRET"),
-		"callbackURL":  os.Getenv("HOST") + "/google/callback",
+	GoogleStrategy = passport.GoogleStrategy(passport.Provider{
+		ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
+		ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
+		RedirectURI:  os.Getenv("HOST") + "/google/callback",
 	})
 }
 
