@@ -59,7 +59,7 @@ func (s *Strategy) Authenticate(code, state string) (Profile, error) {
 	str := string(bs)
 	accessToken := strings.Split(strings.Split(str, "&")[0], "=")[1]
 	fmt.Println("accesstoken", accessToken)
-	bs, err = getHttp(strategy.ProfileURL + "?access_token=" + accessToken)
+	bs, err = getHttp(s.ProfileURL + "?access_token=" + accessToken)
 	var userData map[string]interface{}
 	err = json.Unmarshal(bs, &userData)
 	if err != nil {
