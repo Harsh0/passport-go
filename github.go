@@ -6,7 +6,6 @@ func GithubStrategy(params map[string]string) Strategy {
 		params["state"] = "random"
 	}
 	return Strategy{
-		Name:                   "github",
 		AccessTokenURL:         "https://github.com/login/oauth/access_token",
 		AccessTokenContentType: "application/json",
 		ProfileURL:             "https://api.github.com/user",

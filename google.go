@@ -6,7 +6,6 @@ func GoogleStrategy(params map[string]string) Strategy {
 		params["state"] = "random"
 	}
 	return Strategy{
-		Name:                   "google",
 		AccessTokenURL:         "https://accounts.google.com/o/oauth2/token",
 		AccessTokenContentType: "application/x-www-form-urlencoded",
 		ProfileURL:             "https://www.googleapis.com/plus/v1/people/me",

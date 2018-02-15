@@ -2,15 +2,18 @@ package passport
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"strings"
 )
 
 var strategyList map[string]Strategy
 
+type Provider interface {
+	GetAuthURL(...string) string
+	Authenticate() (Profile, error)
+}
+
 type Strategy struct {
-	Name                   string
 	AccessTokenURL         string
 	AccessTokenContentType string
 	ProfileURL             string
@@ -23,44 +26,32 @@ type Strategy struct {
 
 type Profile map[string]interface{}
 
-func Use(s Strategy) {
-	if strategyList != nil {
-		strategyList[s.Name] = s
-	} else {
-		strategyList = map[string]Strategy{
-			s.Name: s,
-		}
-	}
-}
-
-func GetAuthURL(strategyName string, state string) (string, error) {
-	if _, ok := strategyList[strategyName]; ok == false {
-		return "", errors.New("Strategy not Registered")
-	}
-	strategy := strategyList[strategyName]
+func (s *Strategy) GetAuthURL(states ...string) (string, error) {
 	paramArray := []string{}
-	strategy.AuthURLParam["state"] = state
-	for k, v := range strategy.AuthURLParam {
+	var state string
+	if len(states) == 0 || states[0] == "" {
+		state = "changestatehere"
+	} else {
+		state = states[0]
+	}
+	s.AuthURLParam["state"] = state
+	for k, v := range s.AuthURLParam {
 		paramArray = append(paramArray, k+"="+v)
 	}
-	return strategy.AuthRootURL + "?" + strings.Join(paramArray, "&"), nil
+	return s.AuthRootURL + "?" + strings.Join(paramArray, "&"), nil
 }
 
-func Authenticate(strategyName, code, state string) (Profile, error) {
-	if _, ok := strategyList[strategyName]; ok == false {
-		return nil, errors.New("Strategy not Registered")
-	}
-	strategy := strategyList[strategyName]
+func (s *Strategy) Authenticate(code, state string) (Profile, error) {
 	data := map[string]string{
-		"client_id":     strategy.ClientID,
-		"client_secret": strategy.ClientSecret,
+		"client_id":     s.ClientID,
+		"client_secret": s.ClientSecret,
 		"code":          code,
-		"redirect_uri":  strategy.RedirectURI,
+		"redirect_uri":  s.RedirectURI,
 		"state":         state,
 		"grant_type":    "authorization_code",
 	}
 
-	bs, err := postBody(strategy.AccessTokenContentType, data, strategy.AccessTokenURL)
+	bs, err := postBody(s.AccessTokenContentType, data, s.AccessTokenURL)
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println("should retry")
