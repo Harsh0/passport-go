@@ -14,23 +14,23 @@ var GoogleStrategy passport.Strategy
 var GithubStrategy passport.Strategy
 
 func init() {
+	gotenv.Load()
 	GoogleStrategy = passport.GoogleStrategy(map[string]string{
 		"clientID":     os.Getenv("GOOGLE_CLIENT_ID"),
-		"clientSecret": os.Getenv("GITHUB_CLIENT_ID"),
+		"clientSecret": os.Getenv("GOOGLE_CLIENT_SECRET"),
 		"callbackURL":  os.Getenv("HOST") + "/google/callback",
 	})
 	GithubStrategy = passport.GithubStrategy(map[string]string{
 		"clientID":     os.Getenv("GITHUB_CLIENT_ID"),
-		"clientSecret": os.Getenv("GITHUB_CLIENT_ID"),
+		"clientSecret": os.Getenv("GITHUB_CLIENT_SECRET"),
 		"callbackURL":  os.Getenv("HOST") + "/github/callback",
 	})
 }
 
 /* main will be run during the build process.*/
 func main() {
-	gotenv.Load()
 	//for release mode
-	// gin.SetMode(gin.ReleaseMode)
+	gin.SetMode(gin.ReleaseMode)
 	//Initialize router
 	r := gin.Default()
 	//Use CORS Middleware

@@ -5,15 +5,12 @@ import (
 )
 
 type Strategy struct {
-	AccessTokenURL         string
-	AccessTokenContentType string
-	ProfileURL             string
-	ClientID               string
-	ClientSecret           string
-	RedirectURI            string
-	AuthRootURL            string
-	AuthURLParam           map[string]string
-	_Authenticate          func(string, string) (Profile, error)
+	ClientID      string
+	ClientSecret  string
+	RedirectURI   string
+	AuthRootURL   string
+	AuthURLParam  map[string]string
+	_Authenticate func(string, string) (Profile, error)
 }
 
 type Profile map[string]interface{}

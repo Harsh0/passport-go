@@ -2,7 +2,6 @@ package passport
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -29,7 +28,6 @@ func postBody(contentType string, data map[string]string, url string) ([]byte, e
 	}
 	defer res.Body.Close()
 	body, _ := ioutil.ReadAll(res.Body)
-	fmt.Println(res.Header)
 	return body, nil
 }
 
