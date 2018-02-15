@@ -54,7 +54,7 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"message": "successfully logged in"})
 	})
 	r.GET("/google/signin", func(c *gin.Context) {
-		url, err := passport.GetAuthURL("google", "random2")
+		url, err := GoogleStrategy.GetAuthURL("random2")
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Some Error Occured, Please try again"})
 			return
