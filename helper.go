@@ -1,6 +1,8 @@
 package passport
 
 import (
+	"crypto/rand"
+	"encoding/base64"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
@@ -52,4 +54,14 @@ func ConvertData(data map[string]string) string {
 		str += key + "=" + value
 	}
 	return str
+}
+
+// GenerateRandomString will generate random stringin base64 format.
+func GenerateRandomString(s int) (string, error) {
+	b := make([]byte, n)
+	_, err := rand.Read(b)
+	if err != nil {
+		return "", err
+	}
+	return base64.URLEncoding.EncodeToString(b), err
 }
